@@ -2,16 +2,24 @@ import requests
 import json
 import os
 import argparse
+import sys
 
 # Set up argument parser
 parser = argparse.ArgumentParser(
     description="Fetch GitHub organization members and their first commit dates."
 )
 parser.add_argument("organization", type=str, help="GitHub organization name")
+parser.add_argument(
+    "--output", type=str, help="Output file to save the results", default=None
+)
 args = parser.parse_args()
 
 # Set up your GitHub token and organization name
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+if not GITHUB_TOKEN:
+    print("Error: GITHUB_TOKEN environment variable is not set.")
+    sys.exit(1)
+
 ORG = args.organization
 
 # Define the headers for the API request
@@ -56,14 +64,30 @@ query($login: String!) {
 """
 
 
+# Function to execute GraphQL query
 def run_query(query, variables):
-    response = requests.post(
-        "https://api.github.com/graphql",
-        headers=headers,
-        json={"query": query, "variables": variables},
-    )
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = requests.post(
+            "https://api.github.com/graphql",
+            headers=headers,
+            json={"query": query, "variables": variables},
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+
+def get_first_commit_date(login):
+    variables = {"login": login}
+    result = run_query(query_first_commit, variables)
+    contributions = result["data"]["user"]["contributionsCollection"][
+        "commitContributionsByRepository"
+    ]
+    if contributions and contributions[0]["contributions"]["nodes"]:
+        return contributions[0]["contributions"]["nodes"][0]["occurredAt"]
+    return None
 
 
 def get_members(org):
@@ -78,17 +102,6 @@ def get_members(org):
             break
         cursor = page_info["endCursor"]
     return members
-
-
-def get_first_commit_date(login):
-    variables = {"login": login}
-    result = run_query(query_first_commit, variables)
-    contributions = result["data"]["user"]["contributionsCollection"][
-        "commitContributionsByRepository"
-    ]
-    if contributions and contributions[0]["contributions"]["nodes"]:
-        return contributions[0]["contributions"]["nodes"][0]["occurredAt"]
-    return None
 
 
 def main():
@@ -107,7 +120,12 @@ def main():
         )
 
     # Output the results
-    print(json.dumps(results, indent=2))
+    if args.output:
+        with open(args.output, "w") as f:
+            json.dump(results, f, indent=2)
+        print(f"Results saved to {args.output}")
+    else:
+        print(json.dumps(results, indent=2))
 
 
 if __name__ == "__main__":
