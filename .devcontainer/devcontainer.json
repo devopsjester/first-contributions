@@ -1,0 +1,24 @@
+{
+    "name": "Python 3.12.3",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            "USERNAME": "vscode",
+            "PYTHON_VERSION": "3.12.3"
+        }
+    },
+    "runArgs": [
+        "-u",
+        "vscode"
+    ],
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "terminal.integrated.defaultProfile.linux": "bash"
+    },
+    "extensions": [
+        "github.copilot",
+        "github.copilot-chat"
+    ],
+    "remoteUser": "vscode"
+}

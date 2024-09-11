@@ -1,0 +1,9 @@
+ARG PYTHON_VERSION=3.12.3
+FROM python:${PYTHON_VERSION}
+
+ARG USERNAME=vscode
+RUN useradd -m $USERNAME
+
+USER $USERNAME
+
+CMD ["bash"]
