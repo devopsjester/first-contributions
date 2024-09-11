@@ -1,9 +1,18 @@
 import requests
 import json
+import os
+import argparse
+
+# Set up argument parser
+parser = argparse.ArgumentParser(
+    description="Fetch GitHub organization members and their first commit dates."
+)
+parser.add_argument("organization", type=str, help="GitHub organization name")
+args = parser.parse_args()
 
 # Set up your GitHub token and organization name
-GITHUB_TOKEN = "your_github_token"
-ORG = "your_organization_name"
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+ORG = args.organization
 
 # Define the headers for the API request
 headers = {
