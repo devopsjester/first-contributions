@@ -166,3 +166,4 @@ cython_debug/
 # output files
 csa-results.json
 github-results.json
+customer-success-architects-results.json
