@@ -66,6 +66,25 @@ python3 rest_first_commit.py --user john-doe --org my-org
 - `--user <GitHub username>`: The GitHub username.
 - `--org <GitHub organization>`: The name of the GitHub organization.
 
+### `user_all_commits.py`
+This script fetches the first commit of a specified user in all branches (not just the default one), in a specified GitHub organization using the GitHub REST API.
+
+#### Usage
+```
+python user_all_commits.py --user <GitHub username> --org <GitHub organization>
+```
+
+#### Example
+```
+export API_ACCESS_TOKEN=your_github_token
+python3 user_all_commits.py --user john-doe --org my-org
+```
+
+#### Arguments
+
+- `--user <GitHub username>`: The GitHub username.
+- `--org <GitHub organization>`: The name of the GitHub organization.
+
 ### Environment Variables
 
 -- `API_ACCESS_TOKEN`: Your GitHub API token. This must be set before running the scripts.
