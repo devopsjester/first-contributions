@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import sys
 import requests
+from dateutil.relativedelta import relativedelta
 
 
 def get_first_commit(user, org, token):
@@ -56,21 +57,24 @@ def print_first_commit_details(first_commit, user, first_commit_date, org, token
         # Get user creation date
         user_creation_date = get_user_details(user, token)
 
-        # Calculate the difference in days
+        # Calculate the difference in years, months, and days
         user_creation_date_obj = datetime.strptime(
             user_creation_date, "%Y-%m-%dT%H:%M:%SZ"
         )
         first_commit_date_obj = datetime.strptime(
             first_commit_date, "%Y-%m-%dT%H:%M:%SZ"
         )
-        days_difference = (first_commit_date_obj - user_creation_date_obj).days
+        difference = relativedelta(first_commit_date_obj, user_creation_date_obj)
+        years_difference = difference.years
+        months_difference = difference.months
+        days_difference = difference.days
 
         # Format dates to MM/DD/YYYY
         user_creation_date_formatted = user_creation_date_obj.strftime("%m/%d/%Y")
         first_commit_date_formatted = first_commit_date_obj.strftime("%m/%d/%Y")
 
         print(
-            f"{user} onboarded on {user_creation_date_formatted}, and committed for the first time {days_difference} days later, on {first_commit_date_formatted}."
+            f"{user} onboarded on {user_creation_date_formatted}, and committed for the first time {years_difference} years, {months_difference} months, and {days_difference} days later, on {first_commit_date_formatted}."
         )
     else:
         print(f"No commits found for user {user} in organization {org}.")
